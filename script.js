@@ -74,6 +74,8 @@ function initElements() {
     greeting: document.getElementById("greeting"),
   };
   console.log("DOM элементы инициализированы:", elements);
+  console.log("Элемент greeting найден:", !!elements.greeting);
+  console.log("Элемент greeting:", elements.greeting);
 }
 
 // Проверка существования элементов
@@ -120,6 +122,10 @@ function initApp() {
     // Обработчики событий
     setupEventListeners();
 
+    console.log("Отображение приветствия...");
+    // Отображение приветствия (ПЕРЕД загрузкой статьи)
+    showGreeting();
+
     console.log("Загрузка статьи...");
     // Загрузка статьи из URL параметров
     loadArticleFromURL();
@@ -135,10 +141,6 @@ function initApp() {
     console.log("Настройка улучшений для чтения...");
     // Настройка улучшений для чтения
     setupReadingEnhancements();
-
-    console.log("Отображение приветствия...");
-    // Отображение приветствия
-    showGreeting();
 
     console.log("Приложение успешно инициализировано");
   } catch (error) {
@@ -439,8 +441,7 @@ function displayArticle(article) {
     // Применяем защиту к новому контенту
     setupCopyProtection();
 
-    // Показываем приветствие после загрузки контента
-    showGreeting();
+    // НЕ показываем приветствие здесь, чтобы оно не перезаписывалось
   } catch (error) {
     console.error("Ошибка при отображении статьи:", error);
     showError("Не удалось отобразить статью");
@@ -566,25 +567,37 @@ window.TelegraphApp = {
 // Показать приветствие с именем пользователя
 function showGreeting() {
   try {
+    console.log("Показ приветствия...");
+    console.log("Элемент greeting:", elements.greeting);
+
     let userName = "Анонимус";
 
     // Получаем имя пользователя из Telegram Web App
     if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
       const user = tg.initDataUnsafe.user;
+      console.log("Данные пользователя из Telegram:", user);
       if (user.first_name) {
         userName = user.first_name;
         if (user.last_name) {
           userName += " " + user.last_name;
         }
       }
+    } else {
+      console.log("Telegram Web App недоступен, используем Анонимус");
     }
+
+    console.log("Имя пользователя:", userName);
 
     // Отображаем приветствие
     if (elements.greeting) {
-      elements.greeting.innerHTML = `
-        Привет, <span class="user-name">${userName}</span>! 👋<br>
-        Рады видеть вас в нашем приложении для чтения статей.
-      `;
+      const greetingText = `
+                Привет, <span class="user-name">${userName}</span>! 👋<br>
+                Рады видеть вас в нашем приложении для чтения статей.
+            `;
+      console.log("Устанавливаем приветствие:", greetingText);
+      elements.greeting.innerHTML = greetingText;
+    } else {
+      console.error("Элемент greeting не найден!");
     }
   } catch (error) {
     console.error("Ошибка при отображении приветствия:", error);
