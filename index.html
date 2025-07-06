@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Telegraph Article</title>
+    <meta name="description" content="Статья в стиле Telegraph" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </head>
+  <body>
+    <!-- Контейнер статьи -->
+    <div class="article-container">
+      <!-- Заголовок статьи -->
+      <header class="article-header">
+        <h1 class="article-title" id="article-title">Заголовок статьи</h1>
+        <div class="article-meta">
+          <span class="article-author" id="article-author">Автор</span>
+          <span class="article-date" id="article-date">Дата публикации</span>
+        </div>
+      </header>
+
+      <!-- Содержимое статьи -->
+      <main class="article-content" id="article-content">
+        <!-- Контент статьи будет загружаться динамически -->
+        <p>Загрузка статьи...</p>
+      </main>
+
+      <!-- Навигация -->
+      <nav class="article-nav">
+        <button class="nav-btn" id="share-btn">
+          <span class="icon">📤</span>
+          Поделиться
+        </button>
+        <button class="nav-btn" id="theme-toggle">
+          <span class="icon">🌙</span>
+          Тема
+        </button>
+      </nav>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
