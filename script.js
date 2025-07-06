@@ -566,7 +566,7 @@ window.TelegraphApp = {
 // Показать приветствие с именем пользователя
 function showGreeting() {
   try {
-    let userName = "Дорогой читатель";
+    let userName = "Анонимус";
 
     // Получаем имя пользователя из Telegram Web App
     if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
