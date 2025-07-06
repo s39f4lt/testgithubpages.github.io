@@ -899,6 +899,14 @@ body {
   transition: var(--transition);
   text-decoration: none;
   user-select: none; /* Разрешаем выделение только для кнопок */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  /* Разрешаем взаимодействие с кнопками */
+  pointer-events: auto;
+  /* Улучшенная доступность */
+  position: relative;
+  z-index: 10;
 }
 
 .nav-btn:hover {
@@ -909,6 +917,13 @@ body {
 
 .nav-btn:active {
   transform: translateY(0);
+}
+
+.nav-btn:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  /* Улучшенная видимость фокуса */
+  box-shadow: 0 0 0 3px rgba(0, 136, 204, 0.2);
 }
 
 /* Иконки */
@@ -1025,12 +1040,6 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* Фокус для клавиатурной навигации */
-.nav-btn:focus {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
 }
 
 /* Отключаем выделение текста */

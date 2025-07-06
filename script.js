@@ -76,6 +76,22 @@ function initElements() {
   console.log("DOM элементы инициализированы:", elements);
   console.log("Элемент greeting найден:", !!elements.greeting);
   console.log("Элемент greeting:", elements.greeting);
+
+  // Дополнительная проверка кнопки темы
+  if (elements.themeToggle) {
+    console.log("Кнопка темы найдена и инициализирована");
+    console.log("Кнопка темы:", elements.themeToggle);
+    console.log(
+      "Кнопка темы кликабельна:",
+      elements.themeToggle.style.pointerEvents !== "none"
+    );
+    console.log(
+      "Кнопка темы видима:",
+      elements.themeToggle.offsetParent !== null
+    );
+  } else {
+    console.error("Кнопка темы НЕ найдена!");
+  }
 }
 
 // Проверка существования элементов
@@ -152,9 +168,35 @@ function initApp() {
 // Настройка обработчиков событий
 function setupEventListeners() {
   try {
+    console.log("Настройка обработчиков событий...");
+
     // Переключение темы
     if (elements.themeToggle) {
-      elements.themeToggle.addEventListener("click", toggleTheme);
+      console.log("Кнопка темы найдена:", elements.themeToggle);
+
+      // Удаляем старый обработчик если есть
+      elements.themeToggle.removeEventListener("click", toggleTheme);
+
+      // Добавляем новый обработчик
+      elements.themeToggle.addEventListener("click", (e) => {
+        console.log("Клик по кнопке темы");
+        e.preventDefault();
+        e.stopPropagation();
+        toggleTheme();
+      });
+
+      // Добавляем обработчик для клавиатуры
+      elements.themeToggle.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          console.log("Нажатие клавиши на кнопке темы");
+          e.preventDefault();
+          toggleTheme();
+        }
+      });
+
+      console.log("Обработчики для кнопки темы установлены");
+    } else {
+      console.error("Кнопка темы не найдена!");
     }
 
     // Обработка клавиатурных сокращений
@@ -163,9 +205,30 @@ function setupEventListeners() {
     // Защита от контекстного меню
     document.addEventListener("contextmenu", preventContextMenu);
 
-    // Защита от выделения текста
-    document.addEventListener("selectstart", preventSelection);
-    document.addEventListener("mousedown", preventSelection);
+    // Защита от выделения текста (НО НЕ ДЛЯ КНОПОК)
+    document.addEventListener("selectstart", (e) => {
+      // Разрешаем выделение для кнопок и интерактивных элементов
+      if (
+        e.target.closest(".nav-btn") ||
+        e.target.closest("button") ||
+        e.target.closest("input")
+      ) {
+        return true;
+      }
+      preventSelection(e);
+    });
+
+    document.addEventListener("mousedown", (e) => {
+      // Разрешаем выделение для кнопок и интерактивных элементов
+      if (
+        e.target.closest(".nav-btn") ||
+        e.target.closest("button") ||
+        e.target.closest("input")
+      ) {
+        return true;
+      }
+      preventSelection(e);
+    });
 
     // Защита от перетаскивания
     document.addEventListener("dragstart", preventDrag);
@@ -174,6 +237,8 @@ function setupEventListeners() {
     document.addEventListener("copy", preventCopy);
     document.addEventListener("cut", preventCopy);
     document.addEventListener("paste", preventPaste);
+
+    console.log("Все обработчики событий настроены");
   } catch (error) {
     console.error("Ошибка при настройке обработчиков событий:", error);
   }
@@ -450,8 +515,26 @@ function displayArticle(article) {
 
 // Переключение темы
 function toggleTheme() {
-  const newTheme = appState.theme === "light" ? "dark" : "light";
-  setTheme(newTheme);
+  try {
+    console.log("Переключение темы...");
+    console.log("Текущая тема:", appState.theme);
+
+    const newTheme = appState.theme === "light" ? "dark" : "light";
+    console.log("Новая тема:", newTheme);
+
+    setTheme(newTheme);
+
+    // Показываем уведомление о переключении
+    showNotification(
+      `Тема изменена на ${newTheme === "dark" ? "темную" : "светлую"}`,
+      "success"
+    );
+
+    console.log("Тема успешно переключена");
+  } catch (error) {
+    console.error("Ошибка при переключении темы:", error);
+    showError("Не удалось переключить тему");
+  }
 }
 
 // Установка темы
@@ -562,6 +645,18 @@ window.TelegraphApp = {
   showGreeting,
   setTheme,
   initApp,
+  // Тестовые функции для отладки
+  testThemeButton: () => {
+    console.log("Тестирование кнопки темы...");
+    if (elements.themeToggle) {
+      console.log("Кнопка найдена, симулируем клик");
+      elements.themeToggle.click();
+    } else {
+      console.error("Кнопка темы не найдена!");
+    }
+  },
+  getElements: () => elements,
+  getAppState: () => appState,
 };
 
 // Показать приветствие с именем пользователя
