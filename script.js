@@ -21,15 +21,60 @@ const appState = {
   currentArticle: null,
 };
 
-// DOM элементы
-const elements = {
-  articleTitle: document.getElementById("article-title"),
-  articleAuthor: document.getElementById("article-author"),
-  articleDate: document.getElementById("article-date"),
-  articleContent: document.getElementById("article-content"),
-  themeToggle: document.getElementById("theme-toggle"),
-  greeting: document.getElementById("greeting"),
-};
+// DOM элементы (будет инициализировано после загрузки DOM)
+let elements = {};
+
+// Базовые функции
+function showNotification(message, type = "info") {
+  try {
+    const notification = document.createElement("div");
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+
+    // Создаем контейнер для уведомлений если его нет
+    let container = document.getElementById("notifications");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "notifications";
+      container.className = "notifications";
+      document.body.appendChild(container);
+    }
+
+    container.appendChild(notification);
+
+    // Автоматическое удаление через 3 секунды
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 3000);
+  } catch (error) {
+    console.error("Ошибка при показе уведомления:", error);
+  }
+}
+
+function showError(message) {
+  console.error("Ошибка:", message);
+  // Показываем уведомление только если это не критическая ошибка
+  try {
+    showNotification(message, "error");
+  } catch (error) {
+    console.error("Не удалось показать уведомление об ошибке:", error);
+  }
+}
+
+// Инициализация DOM элементов
+function initElements() {
+  elements = {
+    articleTitle: document.getElementById("article-title"),
+    articleAuthor: document.getElementById("article-author"),
+    articleDate: document.getElementById("article-date"),
+    articleContent: document.getElementById("article-content"),
+    themeToggle: document.getElementById("theme-toggle"),
+    greeting: document.getElementById("greeting"),
+  };
+  console.log("DOM элементы инициализированы:", elements);
+}
 
 // Проверка существования элементов
 function validateElements() {
@@ -56,6 +101,9 @@ function initApp() {
   console.log("Начало инициализации приложения...");
 
   try {
+    // Инициализируем DOM элементы
+    initElements();
+
     // Проверяем существование элементов
     if (!validateElements()) {
       console.error(
@@ -430,41 +478,6 @@ function setTheme(theme) {
   }
 }
 
-// Показать уведомление
-function showNotification(message, type = "info") {
-  try {
-    const notification = document.createElement("div");
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-
-    // Создаем контейнер для уведомлений если его нет
-    let container = document.getElementById("notifications");
-    if (!container) {
-      container = document.createElement("div");
-      container.id = "notifications";
-      container.className = "notifications";
-      document.body.appendChild(container);
-    }
-
-    container.appendChild(notification);
-
-    // Автоматическое удаление через 3 секунды
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.remove();
-      }
-    }, 3000);
-  } catch (error) {
-    console.error("Ошибка при показе уведомления:", error);
-  }
-}
-
-// Показать ошибку
-function showError(message) {
-  console.error("Ошибка:", message);
-  showNotification(message, "error");
-}
-
 // Обработка клавиатурных сокращений
 function handleKeyboardShortcuts(event) {
   // Ctrl/Cmd + K - переключение темы
@@ -513,19 +526,31 @@ document.addEventListener("visibilitychange", () => {
 // Инициализация при загрузке страницы
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM загружен, инициализация приложения...");
-  initApp();
+
+  // Небольшая задержка для гарантии полной загрузки
+  setTimeout(() => {
+    initApp();
+  }, 100);
 });
 
 // Обработка ошибок
 window.addEventListener("error", (event) => {
   console.error("Глобальная ошибка приложения:", event.error);
-  showError("Произошла ошибка при загрузке");
+  // Не показываем уведомление об ошибке, чтобы избежать рекурсии
+  console.error(
+    "Ошибка:",
+    event.message,
+    "в файле:",
+    event.filename,
+    "строка:",
+    event.lineno
+  );
 });
 
 // Обработка необработанных промисов
 window.addEventListener("unhandledrejection", (event) => {
   console.error("Необработанная ошибка промиса:", event.reason);
-  showError("Произошла ошибка при загрузке данных");
+  // Не показываем уведомление об ошибке, чтобы избежать рекурсии
 });
 
 // Экспорт функций для использования в консоли разработчика
@@ -535,6 +560,7 @@ window.TelegraphApp = {
   showNotification,
   showGreeting,
   setTheme,
+  initApp,
 };
 
 // Показать приветствие с именем пользователя
