@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Тест GitHub Pages</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      .success {
+        color: #28a745;
+        font-weight: bold;
+      }
+      .error {
+        color: #dc3545;
+        font-weight: bold;
+      }
+      .info {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎉 GitHub Pages работает!</h1>
+
+    <div class="info">
+      <h2>✅ Проверка файлов</h2>
+      <p>
+        Если вы видите эту страницу, значит GitHub Pages настроен правильно.
+      </p>
+    </div>
+
+    <h2>📁 Структура проекта</h2>
+    <ul>
+      <li><strong>index.html</strong> - главная страница приложения</li>
+      <li><strong>styles.css</strong> - стили в стиле Telegraph</li>
+      <li><strong>script.js</strong> - JavaScript функциональность</li>
+      <li><strong>example.html</strong> - пример статьи</li>
+      <li><strong>test.html</strong> - эта тестовая страница</li>
+    </ul>
+
+    <h2>🔗 Ссылки для тестирования</h2>
+    <ul>
+      <li><a href="index.html">Главная страница</a></li>
+      <li><a href="example.html">Пример статьи</a></li>
+      <li><a href="index.html?article=demo">Демо статья с параметром</a></li>
+    </ul>
+
+    <h2>📱 Для Telegram Bot</h2>
+    <p>Используйте эту ссылку в вашем Telegram боте:</p>
+    <div class="info">
+      <code>https://yourusername.github.io/testgithubpages.github.io/</code>
+    </div>
+
+    <h2>⚙️ Настройка</h2>
+    <p>Если что-то не работает:</p>
+    <ol>
+      <li>Проверьте, что все файлы загружены в репозиторий</li>
+      <li>Убедитесь, что GitHub Pages активирован в настройках</li>
+      <li>Подождите 5-10 минут после активации</li>
+      <li>Проверьте вкладку Actions на наличие ошибок</li>
+    </ol>
+
+    <div class="info">
+      <p><strong>Время загрузки:</strong> <span id="load-time"></span></p>
+      <p><strong>URL:</strong> <span id="current-url"></span></p>
+    </div>
+
+    <script>
+      // Показываем время загрузки
+      document.getElementById("load-time").textContent =
+        new Date().toLocaleString();
+      document.getElementById("current-url").textContent = window.location.href;
+
+      // Проверяем загрузку основных файлов
+      const files = ["index.html", "styles.css", "script.js"];
+      files.forEach((file) => {
+        fetch(file)
+          .then((response) => {
+            if (response.ok) {
+              console.log(`✅ ${file} загружен успешно`);
+            } else {
+              console.error(`❌ ${file} не найден`);
+            }
+          })
+          .catch((error) => {
+            console.error(`❌ Ошибка загрузки ${file}:`, error);
+          });
+      });
+    </script>
+  </body>
+</html>
