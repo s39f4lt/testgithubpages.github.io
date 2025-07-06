@@ -743,6 +743,13 @@ body {
   hyphens: auto;
   word-wrap: break-word;
   overflow-wrap: break-word;
+
+  /* Увеличиваем межстрочный интервал для лучшего чтения */
+  line-height: 1.8;
+}
+
+.article-content p {
+  margin-bottom: 1.5em;
 }
 
 /* Стили для текста статьи */
@@ -1055,17 +1062,6 @@ body {
   background: var(--text-secondary);
 }
 
-/* Дополнительные улучшения для чтения */
-.article-content {
-  /* Увеличиваем межстрочный интервал для лучшего чтения */
-  line-height: 1.8;
-}
-
-.article-content p {
-  /* Добавляем отступы между абзацами */
-  margin-bottom: 1.5em;
-}
-
 /* Улучшенная типографика для заголовков */
 .article-content h1,
 .article-content h2,
@@ -1204,4 +1200,22 @@ body {
   .article-container {
     max-width: 700px;
   }
+}
+
+/* Стили для приветствия */
+.greeting {
+  background-color: var(--surface-color);
+  border-left: 4px solid var(--primary-color);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.greeting .user-name {
+  color: var(--primary-color);
+  font-weight: 600;
 }

@@ -24,8 +24,8 @@ const elements = {
   articleAuthor: document.getElementById("article-author"),
   articleDate: document.getElementById("article-date"),
   articleContent: document.getElementById("article-content"),
-  shareBtn: document.getElementById("share-btn"),
   themeToggle: document.getElementById("theme-toggle"),
+  greeting: document.getElementById("greeting"),
 };
 
 // Инициализация приложения
@@ -47,15 +47,15 @@ function initApp() {
 
   // Настройка улучшений для чтения
   setupReadingEnhancements();
+
+  // Отображение приветствия
+  showGreeting();
 }
 
 // Настройка обработчиков событий
 function setupEventListeners() {
   // Переключение темы
   elements.themeToggle.addEventListener("click", toggleTheme);
-
-  // Кнопка поделиться
-  elements.shareBtn.addEventListener("click", shareArticle);
 
   // Обработка клавиатурных сокращений
   document.addEventListener("keydown", handleKeyboardShortcuts);
@@ -358,62 +358,6 @@ function setTheme(theme) {
   }
 }
 
-// Поделиться статьей
-function shareArticle() {
-  if (tg && appState.currentArticle) {
-    // Использование Telegram Web App для шаринга
-    tg.showPopup(
-      {
-        title: "Поделиться статьей",
-        message: `"${appState.currentArticle.title}"\n\n${window.location.href}`,
-        buttons: [
-          {
-            type: "default",
-            text: "Скопировать ссылку",
-            id: "copy",
-          },
-          {
-            type: "cancel",
-            text: "Отмена",
-          },
-        ],
-      },
-      (buttonId) => {
-        if (buttonId === "copy") {
-          copyToClipboard(window.location.href);
-          showNotification("Ссылка скопирована!", "success");
-        }
-      }
-    );
-  } else {
-    // Fallback для обычного браузера
-    if (navigator.share) {
-      navigator.share({
-        title: appState.currentArticle?.title || "Статья",
-        url: window.location.href,
-      });
-    } else {
-      copyToClipboard(window.location.href);
-      showNotification("Ссылка скопирована!", "success");
-    }
-  }
-}
-
-// Копирование в буфер обмена
-function copyToClipboard(text) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text);
-  } else {
-    // Fallback для старых браузеров
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand("copy");
-    document.body.removeChild(textArea);
-  }
-}
-
 // Показать уведомление
 function showNotification(message, type = "info") {
   const notification = document.createElement("div");
@@ -450,12 +394,6 @@ function handleKeyboardShortcuts(event) {
     toggleTheme();
   }
 
-  // Ctrl/Cmd + S - поделиться
-  if ((event.ctrlKey || event.metaKey) && event.key === "s") {
-    event.preventDefault();
-    shareArticle();
-  }
-
   // Блокируем Ctrl+C, Ctrl+X, Ctrl+A
   if (
     (event.ctrlKey || event.metaKey) &&
@@ -472,11 +410,6 @@ function updateTelegramMeta() {
   if (tg && appState.currentArticle) {
     tg.setHeaderColor(appState.theme === "dark" ? "#1a1a1a" : "#ffffff");
     tg.setBackgroundColor(appState.theme === "dark" ? "#1a1a1a" : "#ffffff");
-
-    // Установка основной кнопки
-    tg.MainButton.setText("Поделиться статьей");
-    tg.MainButton.onClick(shareArticle);
-    tg.MainButton.show();
   }
 }
 
@@ -507,6 +440,29 @@ window.addEventListener("error", (event) => {
 window.TelegraphApp = {
   loadArticle,
   toggleTheme,
-  shareArticle,
   showNotification,
 };
+
+// Показать приветствие с именем пользователя
+function showGreeting() {
+  let userName = "Дорогой читатель";
+
+  // Получаем имя пользователя из Telegram Web App
+  if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    const user = tg.initDataUnsafe.user;
+    if (user.first_name) {
+      userName = user.first_name;
+      if (user.last_name) {
+        userName += " " + user.last_name;
+      }
+    }
+  }
+
+  // Отображаем приветствие
+  if (elements.greeting) {
+    elements.greeting.innerHTML = `
+      Привет, <span class="user-name">${userName}</span>! 👋<br>
+      Рады видеть вас в нашем приложении для чтения статей.
+    `;
+  }
+}
