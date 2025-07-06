@@ -5,8 +5,11 @@ let tg = null;
 try {
   tg = window.Telegram?.WebApp;
   if (tg) {
+    console.log("Telegram Web App найден");
     tg.ready();
     tg.expand();
+  } else {
+    console.log("Telegram Web App не найден, работаем в обычном браузере");
   }
 } catch (error) {
   console.log("Telegram Web App не доступен:", error);
@@ -28,52 +31,102 @@ const elements = {
   greeting: document.getElementById("greeting"),
 };
 
+// Проверка существования элементов
+function validateElements() {
+  console.log("Проверка элементов DOM...");
+  const requiredElements = [
+    "articleTitle",
+    "articleAuthor",
+    "articleDate",
+    "articleContent",
+  ];
+  const missingElements = requiredElements.filter((id) => !elements[id]);
+
+  if (missingElements.length > 0) {
+    console.warn("Отсутствуют элементы:", missingElements);
+    return false;
+  }
+
+  console.log("Все необходимые элементы найдены");
+  return true;
+}
+
 // Инициализация приложения
 function initApp() {
-  // Установка темы
-  setTheme(appState.theme);
+  console.log("Начало инициализации приложения...");
 
-  // Обработчики событий
-  setupEventListeners();
+  try {
+    // Проверяем существование элементов
+    if (!validateElements()) {
+      console.error(
+        "Не удалось инициализировать приложение: отсутствуют необходимые элементы"
+      );
+      return;
+    }
 
-  // Загрузка статьи из URL параметров
-  loadArticleFromURL();
+    console.log("Установка темы...");
+    // Установка темы
+    setTheme(appState.theme);
 
-  // Обновление метаданных для Telegram
-  updateTelegramMeta();
+    console.log("Настройка обработчиков событий...");
+    // Обработчики событий
+    setupEventListeners();
 
-  // Настройка защиты от копирования
-  setupCopyProtection();
+    console.log("Загрузка статьи...");
+    // Загрузка статьи из URL параметров
+    loadArticleFromURL();
 
-  // Настройка улучшений для чтения
-  setupReadingEnhancements();
+    console.log("Обновление метаданных Telegram...");
+    // Обновление метаданных для Telegram
+    updateTelegramMeta();
 
-  // Отображение приветствия
-  showGreeting();
+    console.log("Настройка защиты от копирования...");
+    // Настройка защиты от копирования
+    setupCopyProtection();
+
+    console.log("Настройка улучшений для чтения...");
+    // Настройка улучшений для чтения
+    setupReadingEnhancements();
+
+    console.log("Отображение приветствия...");
+    // Отображение приветствия
+    showGreeting();
+
+    console.log("Приложение успешно инициализировано");
+  } catch (error) {
+    console.error("Ошибка при инициализации приложения:", error);
+    showError("Произошла ошибка при загрузке приложения");
+  }
 }
 
 // Настройка обработчиков событий
 function setupEventListeners() {
-  // Переключение темы
-  elements.themeToggle.addEventListener("click", toggleTheme);
+  try {
+    // Переключение темы
+    if (elements.themeToggle) {
+      elements.themeToggle.addEventListener("click", toggleTheme);
+    }
 
-  // Обработка клавиатурных сокращений
-  document.addEventListener("keydown", handleKeyboardShortcuts);
+    // Обработка клавиатурных сокращений
+    document.addEventListener("keydown", handleKeyboardShortcuts);
 
-  // Защита от контекстного меню
-  document.addEventListener("contextmenu", preventContextMenu);
+    // Защита от контекстного меню
+    document.addEventListener("contextmenu", preventContextMenu);
 
-  // Защита от выделения текста
-  document.addEventListener("selectstart", preventSelection);
-  document.addEventListener("mousedown", preventSelection);
+    // Защита от выделения текста
+    document.addEventListener("selectstart", preventSelection);
+    document.addEventListener("mousedown", preventSelection);
 
-  // Защита от перетаскивания
-  document.addEventListener("dragstart", preventDrag);
+    // Защита от перетаскивания
+    document.addEventListener("dragstart", preventDrag);
 
-  // Защита от копирования
-  document.addEventListener("copy", preventCopy);
-  document.addEventListener("cut", preventCopy);
-  document.addEventListener("paste", preventPaste);
+    // Защита от копирования
+    document.addEventListener("copy", preventCopy);
+    document.addEventListener("cut", preventCopy);
+    document.addEventListener("paste", preventPaste);
+  } catch (error) {
+    console.error("Ошибка при настройке обработчиков событий:", error);
+  }
 }
 
 // Защита от копирования
@@ -314,25 +367,36 @@ function loadDemoArticle() {
 
 // Отображение статьи
 function displayArticle(article) {
-  appState.currentArticle = article;
+  try {
+    appState.currentArticle = article;
 
-  // Обновление заголовка страницы
-  document.title = article.title;
+    // Обновление заголовка страницы
+    document.title = article.title;
 
-  // Обновление элементов
-  elements.articleTitle.textContent = article.title;
-  elements.articleAuthor.textContent = article.author;
-  elements.articleDate.textContent = article.date;
-  elements.articleContent.innerHTML = article.content;
+    // Обновление элементов (с проверкой существования)
+    if (elements.articleTitle)
+      elements.articleTitle.textContent = article.title;
+    if (elements.articleAuthor)
+      elements.articleAuthor.textContent = article.author;
+    if (elements.articleDate) elements.articleDate.textContent = article.date;
+    if (elements.articleContent)
+      elements.articleContent.innerHTML = article.content;
 
-  // Обновление метаданных для Telegram
-  updateTelegramMeta();
+    // Обновление метаданных для Telegram
+    updateTelegramMeta();
 
-  // Прокрутка в начало
-  window.scrollTo(0, 0);
+    // Прокрутка в начало
+    window.scrollTo(0, 0);
 
-  // Применяем защиту к новому контенту
-  setupCopyProtection();
+    // Применяем защиту к новому контенту
+    setupCopyProtection();
+
+    // Показываем приветствие после загрузки контента
+    showGreeting();
+  } catch (error) {
+    console.error("Ошибка при отображении статьи:", error);
+    showError("Не удалось отобразить статью");
+  }
 }
 
 // Переключение темы
@@ -343,46 +407,61 @@ function toggleTheme() {
 
 // Установка темы
 function setTheme(theme) {
-  appState.theme = theme;
-  document.documentElement.setAttribute("data-theme", theme);
-  localStorage.setItem("theme", theme);
+  try {
+    appState.theme = theme;
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
 
-  // Обновление иконки
-  const icon = elements.themeToggle.querySelector(".icon");
-  icon.textContent = theme === "light" ? "🌙" : "☀️";
+    // Обновление иконки (с проверкой существования)
+    if (elements.themeToggle) {
+      const icon = elements.themeToggle.querySelector(".icon");
+      if (icon) {
+        icon.textContent = theme === "light" ? "🌙" : "☀️";
+      }
+    }
 
-  // Обновление Telegram Web App
-  if (tg) {
-    tg.setHeaderColor(theme === "dark" ? "#1a1a1a" : "#ffffff");
-    tg.setBackgroundColor(theme === "dark" ? "#1a1a1a" : "#ffffff");
+    // Обновление Telegram Web App
+    if (tg) {
+      tg.setHeaderColor(theme === "dark" ? "#1a1a1a" : "#ffffff");
+      tg.setBackgroundColor(theme === "dark" ? "#1a1a1a" : "#ffffff");
+    }
+  } catch (error) {
+    console.error("Ошибка при установке темы:", error);
   }
 }
 
 // Показать уведомление
 function showNotification(message, type = "info") {
-  const notification = document.createElement("div");
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
+  try {
+    const notification = document.createElement("div");
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
 
-  // Создаем контейнер для уведомлений если его нет
-  let container = document.getElementById("notifications");
-  if (!container) {
-    container = document.createElement("div");
-    container.id = "notifications";
-    container.className = "notifications";
-    document.body.appendChild(container);
+    // Создаем контейнер для уведомлений если его нет
+    let container = document.getElementById("notifications");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "notifications";
+      container.className = "notifications";
+      document.body.appendChild(container);
+    }
+
+    container.appendChild(notification);
+
+    // Автоматическое удаление через 3 секунды
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 3000);
+  } catch (error) {
+    console.error("Ошибка при показе уведомления:", error);
   }
-
-  container.appendChild(notification);
-
-  // Автоматическое удаление через 3 секунды
-  setTimeout(() => {
-    notification.remove();
-  }, 3000);
 }
 
 // Показать ошибку
 function showError(message) {
+  console.error("Ошибка:", message);
   showNotification(message, "error");
 }
 
@@ -407,9 +486,13 @@ function handleKeyboardShortcuts(event) {
 
 // Обновление метаданных для Telegram
 function updateTelegramMeta() {
-  if (tg && appState.currentArticle) {
-    tg.setHeaderColor(appState.theme === "dark" ? "#1a1a1a" : "#ffffff");
-    tg.setBackgroundColor(appState.theme === "dark" ? "#1a1a1a" : "#ffffff");
+  try {
+    if (tg && appState.currentArticle) {
+      tg.setHeaderColor(appState.theme === "dark" ? "#1a1a1a" : "#ffffff");
+      tg.setBackgroundColor(appState.theme === "dark" ? "#1a1a1a" : "#ffffff");
+    }
+  } catch (error) {
+    console.error("Ошибка при обновлении метаданных Telegram:", error);
   }
 }
 
@@ -428,12 +511,21 @@ document.addEventListener("visibilitychange", () => {
 });
 
 // Инициализация при загрузке страницы
-document.addEventListener("DOMContentLoaded", initApp);
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM загружен, инициализация приложения...");
+  initApp();
+});
 
 // Обработка ошибок
 window.addEventListener("error", (event) => {
-  console.error("Ошибка приложения:", event.error);
+  console.error("Глобальная ошибка приложения:", event.error);
   showError("Произошла ошибка при загрузке");
+});
+
+// Обработка необработанных промисов
+window.addEventListener("unhandledrejection", (event) => {
+  console.error("Необработанная ошибка промиса:", event.reason);
+  showError("Произошла ошибка при загрузке данных");
 });
 
 // Экспорт функций для использования в консоли разработчика
@@ -441,28 +533,34 @@ window.TelegraphApp = {
   loadArticle,
   toggleTheme,
   showNotification,
+  showGreeting,
+  setTheme,
 };
 
 // Показать приветствие с именем пользователя
 function showGreeting() {
-  let userName = "Дорогой читатель";
+  try {
+    let userName = "Дорогой читатель";
 
-  // Получаем имя пользователя из Telegram Web App
-  if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    const user = tg.initDataUnsafe.user;
-    if (user.first_name) {
-      userName = user.first_name;
-      if (user.last_name) {
-        userName += " " + user.last_name;
+    // Получаем имя пользователя из Telegram Web App
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      const user = tg.initDataUnsafe.user;
+      if (user.first_name) {
+        userName = user.first_name;
+        if (user.last_name) {
+          userName += " " + user.last_name;
+        }
       }
     }
-  }
 
-  // Отображаем приветствие
-  if (elements.greeting) {
-    elements.greeting.innerHTML = `
-      Привет, <span class="user-name">${userName}</span>! 👋<br>
-      Рады видеть вас в нашем приложении для чтения статей.
-    `;
+    // Отображаем приветствие
+    if (elements.greeting) {
+      elements.greeting.innerHTML = `
+        Привет, <span class="user-name">${userName}</span>! 👋<br>
+        Рады видеть вас в нашем приложении для чтения статей.
+      `;
+    }
+  } catch (error) {
+    console.error("Ошибка при отображении приветствия:", error);
   }
 }

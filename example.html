@@ -101,5 +101,15 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+      // Проверка загрузки основного скрипта
+      if (typeof TelegraphApp === "undefined") {
+        console.error("Основной скрипт не загружен");
+        document.body.innerHTML =
+          '<div style="padding: 20px; text-align: center;"><h1>Ошибка загрузки</h1><p>Не удалось загрузить приложение. Попробуйте обновить страницу.</p></div>';
+      } else {
+        console.log("Основной скрипт загружен успешно");
+      }
+    </script>
   </body>
 </html>
