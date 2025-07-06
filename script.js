@@ -174,12 +174,14 @@ function setupEventListeners() {
     if (elements.themeToggle) {
       console.log("Кнопка темы найдена:", elements.themeToggle);
 
-      // Удаляем старый обработчик если есть
+      // Удаляем старые обработчики если есть
       elements.themeToggle.removeEventListener("click", toggleTheme);
 
       // Добавляем новый обработчик
       elements.themeToggle.addEventListener("click", (e) => {
         console.log("Клик по кнопке темы");
+        console.log("Цель клика:", e.target);
+        console.log("Текущая цель:", e.currentTarget);
         e.preventDefault();
         e.stopPropagation();
         toggleTheme();
@@ -192,6 +194,13 @@ function setupEventListeners() {
           e.preventDefault();
           toggleTheme();
         }
+      });
+
+      // Добавляем обработчик mousedown для отладки
+      elements.themeToggle.addEventListener("mousedown", (e) => {
+        console.log("MouseDown на кнопке темы");
+        console.log("Цель:", e.target);
+        console.log("Разрешен ли клик:", !e.defaultPrevented);
       });
 
       console.log("Обработчики для кнопки темы установлены");
@@ -244,7 +253,7 @@ function setupEventListeners() {
   }
 }
 
-// Защита от копирования
+// Настройка защиты от копирования
 function setupCopyProtection() {
   // Отключаем выделение для всего документа
   document.body.style.webkitUserSelect = "none";
@@ -291,8 +300,14 @@ function setupCopyProtection() {
 
   // Дополнительная защита от выделения
   document.addEventListener("mousedown", (e) => {
-    // Разрешаем выделение только для кнопок
-    if (!e.target.closest(".nav-btn")) {
+    // Разрешаем взаимодействие с кнопками навигации и их дочерними элементами
+    const isNavButton =
+      e.target.closest(".nav-btn") ||
+      e.target.closest("#theme-toggle") ||
+      e.target.classList.contains("nav-btn") ||
+      e.target.id === "theme-toggle";
+
+    if (!isNavButton) {
       e.preventDefault();
       return false;
     }
@@ -653,6 +668,35 @@ window.TelegraphApp = {
       elements.themeToggle.click();
     } else {
       console.error("Кнопка темы не найдена!");
+    }
+  },
+  // Новая функция для детального тестирования
+  debugThemeButton: () => {
+    console.log("=== Детальная отладка кнопки темы ===");
+    console.log("Элемент кнопки:", elements.themeToggle);
+    if (elements.themeToggle) {
+      console.log("ID кнопки:", elements.themeToggle.id);
+      console.log("Классы кнопки:", elements.themeToggle.className);
+      console.log("Стили кнопки:", {
+        display: elements.themeToggle.style.display,
+        visibility: elements.themeToggle.style.visibility,
+        pointerEvents: elements.themeToggle.style.pointerEvents,
+        zIndex: elements.themeToggle.style.zIndex,
+      });
+      console.log("Позиция кнопки:", {
+        offsetTop: elements.themeToggle.offsetTop,
+        offsetLeft: elements.themeToggle.offsetLeft,
+        offsetWidth: elements.themeToggle.offsetWidth,
+        offsetHeight: elements.themeToggle.offsetHeight,
+      });
+      console.log(
+        "Видима ли кнопка:",
+        elements.themeToggle.offsetParent !== null
+      );
+      console.log(
+        "Кликабельна ли кнопка:",
+        elements.themeToggle.style.pointerEvents !== "none"
+      );
     }
   },
   getElements: () => elements,
